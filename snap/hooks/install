@@ -1,0 +1,16 @@
+#!/bin/bash
+exec > >(tee "$SNAP_DATA/logs/install.log") 2>&1
+
+mkdir -p $SNAP_DATA/logs
+mkdir -p $SNAP_DATA/tinc
+mkdir -p $SNAP_DATA/tunnel
+mkdir -p $SNAP_DATA/www
+mkdir -p $SNAP_DATA/server
+
+echo "Generate this hosts keys"
+mkdir -p $SNAP_DATA/tinc/hosts
+$SNAP/sbin/tincd -K4096 -c $SNAP_DATA/tinc
+
+# This file will be removed by the service when the user has
+# connected the needed interfaces.
+touch $SNAP_DATA/tunnel/interfaces_needed

@@ -1,0 +1,67 @@
+---
+
+name: tunnel
+version: '0.1'
+summary: This snap connects computers in a private VPN
+description: |
+  This snap uses Tinc (tinc-vpn.org) to setup a private encrypted secure
+  tunnel between computers. This snap is to make the process really easy
+  to use.
+
+grade: devel
+confinement: strict
+
+apps:
+  tunnel:
+    command: bin/run
+    plugs:
+      - network-bind
+      - network-control
+      - network-setup-control
+  setup:
+    command: bin/setup
+  service:
+    command: bin/service
+    daemon: simple
+    plugs:
+      - network-bind
+      - network-control
+      - network-setup-control
+  www:
+    command: bin/www
+    daemon: simple
+    plugs:
+      - network-bind
+  tinc:
+    command: bin/tinc-start
+    stop-command: bin/tinc-stop
+    daemon: simple
+    plugs:
+      - network-bind
+      - network-control
+      - network-setup-control
+
+hooks:
+  configure:
+    plugs:
+      - network-observe
+
+parts:
+  tinc:
+    plugin: autotools
+    source: git://tinc-vpn.org/tinc
+    source-tag: release-1.0.33
+    build-packages:
+      - liblzo2-dev
+      - zlib1g-dev
+      - libssl-dev
+      - texinfo
+    stage-packages:
+      - bridge-utils
+
+  run:
+    plugin: dump
+    source: scripts
+    organize:
+      '*': bin/
+    after: [simple-webserver]

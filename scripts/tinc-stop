@@ -1,0 +1,6 @@
+#!/bin/bash
+exec > >(tee "$SNAP_DATA/logs/tinc.log") 2>&1
+
+. $SNAP_DATA/tunnel/tunnel.conf
+
+exec tincd -k TERM --pidfile=$SNAP_DATA/tinc/pid

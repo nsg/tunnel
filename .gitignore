@@ -1,0 +1,6 @@
+/stage/
+/prime/
+/parts/
+/snap/.snapcraft/
+/*.snap
+/*.bz2

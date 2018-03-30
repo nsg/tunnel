@@ -1,0 +1,38 @@
+#!/bin/bash
+
+. $SNAP_DATA/tunnel/tunnel.conf
+
+if [ -f $SNAP_DATA/tunnel/interfaces_needed ]; then
+	echo "+----------------------------------------------------------------------+"
+	echo "| You need to connect the interfaces tunnel:network-control and        |"
+	echo "| tunnel:network-setup-control to this snap. This snap needs the       |"
+	echo "| permissions to add bridges and setup the tunnel.                     |"
+	echo "|                                                                      |"
+	echo "| # snap connect tunnel:network-control                                |"
+	echo "| # snap connect tunnel:network-setup-control                          |"
+	echo "| # snap connect tunnel:network-observe                                |"
+	echo "|                                                                      |"
+	echo "| Then type \"snap refresh tunnel\" to reload.                           |"
+	echo "|                                                                      |"
+	echo "| ... or just type: \"tunnel.setup | bash\"                              |"
+	echo "+-----------------------------------------------------------------------"
+	exit 0
+fi
+
+echo "+----------------------------------------------------------------------+"
+echo "| These are the current settings, change them by running the commands: |"
+echo "+-----------------------------------------------------------------------"
+echo
+echo "Select the bride to use:"
+echo "  snap set tunnel bridge=$BRIDGE"
+echo "The IP:"
+echo "  snap set tunnel ip4addr=$IP4ADDR"
+echo "Tinc configuration:"
+echo "  snap set tunnel mode=$MODE"
+echo "  snap set tunnel tincport=$TINC_PORT"
+echo "Publish public key:"
+echo "  snap set tunnel server=$SERVER"
+echo "  snap set tunnel serverport=$SERVER_PORT"
+echo
+
+bash

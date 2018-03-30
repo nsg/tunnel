@@ -1,0 +1,44 @@
+#!/bin/bash
+exec > >(tee "$SNAP_DATA/logs/service.log") 2>&1
+
+load_config() {
+	echo "Load tunnel.conf"
+	. $SNAP_DATA/tunnel/tunnel.conf
+}
+
+config_checksum() {
+	sha256sum $SNAP_DATA/tunnel/tunnel.conf | awk '{ print $1 }'
+}
+
+# I got DENIED by apparmor when I tried to place this logic in the
+# configure hook, and yes I added the needed plugs.
+reconfigure() {
+	if [ x$BRIDGE != x ]; then
+		if brctl show $BRIDGE 2>&1 | grep -q "No such device"; then
+			echo "Setup a new bridge called $BRIDGE"
+			brctl addbr $BRIDGE
+			brctl stp $BRIDGE on
+		else
+			echo "Reuse existing bridge $BRIDGE"
+			echo "It's recommended to enable stp on this bridge"
+		fi
+	fi
+}
+
+while [ -f $SNAP_DATA/tunnel/interfaces_needed ]; do
+	if brctl addbr testbrin99; then
+		rm $SNAP_DATA/tunnel/interfaces_needed
+		brctl delbr testbrin99
+	fi
+	sleep 1
+done
+
+while sleep 1; do
+	if [ -f $SNAP_DATA/tunnel/tunnel.conf ]; then
+		if [[ $CONFIG_CHECKSUM != $(config_checksum) ]]; then
+			load_config
+			reconfigure
+			CONFIG_CHECKSUM=$(config_checksum)
+		fi
+	fi
+done
