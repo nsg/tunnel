@@ -29,7 +29,7 @@ if [ -f $SNAP_DATA/tunnel/interfaces_needed ]; then
 fi
 
 usage() {
-	echo "$(bold "tunnel [-sh] [invite|config]")"
+	echo "$(bold "tunnel [-hH] [invite|config]")"
 	echo "  $(bold -h)          Show help for the following command."
 	echo "  $(bold -H)          Print command specific help messages."
 	echo
@@ -64,25 +64,6 @@ about() {
 	echo "You only need one tunnel instance exposed, but for a faster and more robust"
 	echo "network it's recommended to use serveral. You can then connect to any "
 	echo "installation that you have access to."
-	echo
-	echo "  A ----> B <----> D"
-	echo "          ^       /"
-	echo "          |  E <--"
-	echo "          |"
-	echo "          C"
-	echo
-	echo "A connects to B, B and D to each other. C connects to B and D to E. The"
-	echo "tinc software that runs the tunnel will mesh everything togeter to one network."
-	echo "Let's assume that In the above scenario only B and D are exposed on the"
-	echo "internet. Still it's fine to join C if you can connect to it."
-	echo
-	echo "I guess most people will use it like this to keep things simple:"
-	echo
-	echo "  A ----> B <----- D"
-	echo "          ^"
-	echo "          |"
-	echo "          |"
-	echo "          C"
 	echo
 	echo "For more information see: https://www.tinc-vpn.org"
 }
