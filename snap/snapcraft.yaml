@@ -50,11 +50,13 @@ parts:
   tinc:
     plugin: autotools
     source: git://tinc-vpn.org/tinc
-    source-tag: release-1.0.33
+    source-tag: release-1.1pre15
     build-packages:
       - liblzo2-dev
       - zlib1g-dev
       - libssl-dev
+      - libncurses5-dev
+      - libreadline-dev
       - texinfo
     stage-packages:
       - bridge-utils
