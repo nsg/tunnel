@@ -1,5 +1,4 @@
 #!/bin/bash
-exec > >(tee "$SNAP_DATA/logs/service.log") 2>&1
 
 load_config() {
 	echo "Load tunnel.conf"

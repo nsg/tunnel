@@ -30,9 +30,5 @@ echo "  snap set tunnel ip4addr=$IP4ADDR"
 echo "Tinc configuration:"
 echo "  snap set tunnel mode=$MODE"
 echo "  snap set tunnel tincport=$TINC_PORT"
-echo "Publish public key:"
-echo "  snap set tunnel server=$SERVER"
-echo "  snap set tunnel serverport=$SERVER_PORT"
-echo
 
 bash

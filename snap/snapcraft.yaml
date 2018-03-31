@@ -27,11 +27,6 @@ apps:
       - network-bind
       - network-control
       - network-setup-control
-  www:
-    command: bin/www
-    daemon: simple
-    plugs:
-      - network-bind
   tinc:
     command: bin/tinc-start
     stop-command: bin/tinc-stop
@@ -66,4 +61,3 @@ parts:
     source: scripts
     organize:
       '*': bin/
-    after: [simple-webserver]

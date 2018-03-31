@@ -1,7 +1,0 @@
-#!/bin/bash
-exec > >(tee "$SNAP_DATA/logs/www.log") 2>&1
-
-. $SNAP_DATA/tunnel/tunnel.conf
-
-# path.Join(snapdir, flag.Arg(0))
-SNAP=$SNAP_DATA webserver -p $SERVER_PORT www > $SNAP_DATA/logs/webserver.log

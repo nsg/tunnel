@@ -1,5 +1,4 @@
 #!/bin/bash
-exec > >(tee "$SNAP_DATA/logs/tinc.log") 2>&1
 
 . $SNAP_DATA/tunnel/tunnel.conf
 

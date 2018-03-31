@@ -20,8 +20,6 @@ BRIDGE=$(get_value bridge tunnel0)
 MODE=$(get_value mode switch)
 TINC_PORT=$(get_value tincport 655)
 IP4ADDR=$(get_value ip4addr $(default_ip))
-SERVER=$(get_value server yes)
-SERVER_PORT=$(get_value serverport 4655)
 " | grep = | sort > "$SNAP_DATA/tunnel/tunnel.conf"
 
 . $SNAP_DATA/tunnel/tunnel.conf
@@ -52,15 +50,6 @@ echo "
 Address = $IP4ADDR
 $(cat $SNAP_DATA/tinc/rsa_key.pub)
 " > $SNAP_DATA/tinc/hosts/$(tinc_name)
-
-cp $SNAP_DATA/tinc/rsa_key.pub $SNAP_DATA/www/public_key
-
-if [ x$SERVER == xyes ]; then
-	snapctl stop tunnel.www
-	snapctl start tunnel.www
-else
-	snapctl stop tunnel.www
-fi
 
 snapctl stop tunnel.tinc
 snapctl start tunnel.tinc

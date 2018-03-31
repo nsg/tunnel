@@ -4,8 +4,6 @@ exec > >(tee "$SNAP_DATA/logs/install.log") 2>&1
 mkdir -p $SNAP_DATA/logs
 mkdir -p $SNAP_DATA/tinc
 mkdir -p $SNAP_DATA/tunnel
-mkdir -p $SNAP_DATA/www
-mkdir -p $SNAP_DATA/server
 
 echo "Generate this hosts keys"
 mkdir -p $SNAP_DATA/tinc/hosts
