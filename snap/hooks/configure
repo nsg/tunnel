@@ -18,7 +18,7 @@ default_ip() {
 echo "
 BRIDGE=$(get_value bridge tunnel0)
 MODE=$(get_value mode switch)
-TINC_PORT=$(get_value tincport 655)
+TINC_PORT=$(get_value port 655)
 IP4ADDR=$(get_value ip4addr $(default_ip))
 " | grep = | sort > "$SNAP_DATA/tunnel/tunnel.conf"
 

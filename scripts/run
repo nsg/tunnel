@@ -2,6 +2,15 @@
 
 . $SNAP_DATA/tunnel/tunnel.conf
 
+tinc_name() {
+	hostname | sed 's/[^a-z0-9]//'
+}
+
+bold() { echo -ne "\e[1m${@}\e[0m"; }
+dim() { echo -ne "\e[2m${@}\e[0m"; }
+inverted() { echo -ne "\e[7m${@}\e[0m"; }
+underline() { echo -ne "\e[4m${@}\e[0m"; }
+
 if [ -f $SNAP_DATA/tunnel/interfaces_needed ]; then
 	echo "+----------------------------------------------------------------------+"
 	echo "| You need to connect the interfaces tunnel:network-control and        |"
@@ -19,16 +28,113 @@ if [ -f $SNAP_DATA/tunnel/interfaces_needed ]; then
 	exit 0
 fi
 
-echo "+----------------------------------------------------------------------+"
-echo "| These are the current settings, change them by running the commands: |"
-echo "+-----------------------------------------------------------------------"
-echo
-echo "Select the bride to use:"
-echo "  snap set tunnel bridge=$BRIDGE"
-echo "The IP:"
-echo "  snap set tunnel ip4addr=$IP4ADDR"
-echo "Tinc configuration:"
-echo "  snap set tunnel mode=$MODE"
-echo "  snap set tunnel tincport=$TINC_PORT"
+usage() {
+	echo "$(bold "tunnel [-sh] [invite|config]")"
+	echo "  $(bold -h)          Show help for the following command."
+	echo "  $(bold -H)          Print command specific help messages."
+	echo
+	echo "  $(bold invite)          Invite a remote machine to join the network."
+	echo "  $(bold config)          Print configuration options."
+	echo
+	echo "If this is your first time using tunnel, I recommend that you run"
+	echo "the config command $(bold tunnel config) and read $(bold tunnel about)."
+	exit 0
+}
 
-bash
+config() {
+	echo "Tunnel uses the snapd configuration options. Set options"
+	echo "with \"$(bold "sudo snap tunnel set key=value")\"."
+	echo
+	echo "$(dim sudo snap tunnel set) $(bold "bridge=$BRIDGE")"
+	echo "$(dim sudo snap tunnel set) $(bold "ip4addr=$IP4ADDR")"
+	echo "$(dim sudo snap tunnel set) $(bold "mode=$MODE")"
+	echo "$(dim sudo snap tunnel set) $(bold "port=$TINC_PORT")"
+	echo
+	echo "To restore a value to it's default value, set it to an empty"
+	echo "string, like \"$(bold "sudo snap tunnel key=")\""
+}
+
+about() {
+	echo "There are no dedicated server or client. Any tunnel installation can"
+	echo "connect to any other installation, assuming it's reachable. For a"
+	echo "installation to be reachable you need to make sure that port $(bold $TINC_PORT) TCP/UDP"
+	echo "is reachable, and that $(bold $IP4ADDR) points to the right place."
+	echo "See $(bold tunnel config) for how to change these values."
+	echo
+	echo "You only need one tunnel instance exposed, but for a faster and more robust"
+	echo "network it's recommended to use serveral. You can then connect to any "
+	echo "installation that you have access to."
+	echo
+	echo "  A ----> B <----> D"
+	echo "          ^       /"
+	echo "          |  E <--"
+	echo "          |"
+	echo "          C"
+	echo
+	echo "A connects to B, B and D to each other. C connects to B and D to E. The"
+	echo "tinc software that runs the tunnel will mesh everything togeter to one network."
+	echo "Let's assume that In the above scenario only B and D are exposed on the"
+	echo "internet. Still it's fine to join C if you can connect to it."
+	echo
+	echo "I guess most people will use it like this to keep things simple:"
+	echo
+	echo "  A ----> B <----- D"
+	echo "          ^"
+	echo "          |"
+	echo "          |"
+	echo "          C"
+	echo
+	echo "For more information see: https://www.tinc-vpn.org"
+}
+
+#p=${OPTARG}
+while getopts ":sH" o; do
+	case "${o}" in
+		s)
+			exec bash
+			;;
+		H)
+			HELP_COMMAND=yes
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+shift $((OPTIND-1))
+
+case "$1" in
+	invite)
+		if [ x$HELP_COMMAND == xyes ]; then
+			echo "To invite $(underline this) host type the following on remote host:"
+			echo "$(bold sudo tunnel invite $(tinc_name))"
+			exit 0
+		fi
+
+		if [ -z $2 ]; then
+			echo "You need to specify the hostname of the host you like to invite."
+			echo -n "If you are unsure, type \"$(bold tunnel -H invite)\" on "
+			echo "the $(underline other) host."
+		else
+			if [ $UID != 0 ]; then
+				echo "You need to run this as root, add sudo in front of the command."
+			else
+				echo "An invitation generated for $2, this is your URL:"
+				tinc -c $SNAP_DATA/tinc/ invite $2 | tee $SNAP_DATA/invite
+				echo
+				echo "On the $(underline other) system, type this:"
+				echo "sudo tunnel join $(cat $SNAP_DATA/invite)"
+				rm $SNAP_DATA/invite
+			fi
+		fi
+		;;
+	config)
+		config
+		;;
+	about)
+		about
+		;;
+	*)
+		usage
+		;;
+esac
