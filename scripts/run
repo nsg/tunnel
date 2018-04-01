@@ -52,7 +52,6 @@ config() {
 	echo "with \"$(bold "sudo snap set tunnel key=value")\"."
 	echo
 	echo "$(dim sudo snap set tunnel) $(bold "bridge=$BRIDGE")"
-	echo "$(dim sudo snap set tunnel) $(bold "ip4addr=$IP4ADDR")"
 	echo "$(dim sudo snap set tunnel) $(bold "mode=$MODE")"
 	echo "$(dim sudo snap set tunnel) $(bold "port=$TINC_PORT")"
 	echo
@@ -64,8 +63,7 @@ about() {
 	echo "There are no dedicated server or client. Any tunnel installation can"
 	echo "connect to any other installation, assuming it's reachable. For a"
 	echo "installation to be reachable you need to make sure that port $(bold $TINC_PORT) TCP/UDP"
-	echo "is reachable, and that $(bold $IP4ADDR) points to the right place."
-	echo "See $(bold tunnel config) for how to change these values."
+	echo "is reachable. See $(bold tunnel config) for how to change these values."
 	echo
 	echo "For more information see: https://www.tinc-vpn.org"
 }

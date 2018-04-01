@@ -11,18 +11,13 @@ tinc_name() {
 	hostname | sed 's/[^a-z0-9]//'
 }
 
-default_ip() {
-	ip r g 8.8.8.8 | grep src | sed 's/.*src *\([^ ]*\).*/\1/'
-}
-
 echo "\
 # This file is written by the configure hook by snapd.
 # The file will be overwritten, see: tunnel config
 
 BRIDGE=$(get_value bridge tunnel0)
 MODE=$(get_value mode switch)
-TINC_PORT=$(get_value port 655)
-IP4ADDR=$(get_value ip4addr $(default_ip))" \
+TINC_PORT=$(get_value port 655)" \
 > "$SNAP_DATA/tunnel/tunnel.conf"
 
 . $SNAP_DATA/tunnel/tunnel.conf
