@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo sudo snap connect tunnel:network-control
-echo sudo snap connect tunnel:network-setup-control
-echo sudo snap connect tunnel:network-observe
-echo sudo snap refresh tunnel
+echo snap connect tunnel:network-control
+echo snap connect tunnel:network-setup-control
+echo snap connect tunnel:network-observe
+echo snap set tunnel ip4addr= # run configure hook to detect IP

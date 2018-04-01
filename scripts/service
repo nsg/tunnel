@@ -9,6 +9,10 @@ config_checksum() {
 	sha256sum $SNAP_DATA/tunnel/tunnel.conf | awk '{ print $1 }'
 }
 
+tinc_name() {
+	hostname | sed 's/[^a-z0-9]//'
+}
+
 # I got DENIED by apparmor when I tried to place this logic in the
 # configure hook, and yes I added the needed plugs.
 reconfigure() {
@@ -22,6 +26,16 @@ reconfigure() {
 			echo "It's recommended to enable stp on this bridge"
 		fi
 	fi
+
+	if [ ! -f $SNAP_DATA/tinc/rsa_key.priv ]; then
+		echo -e "\n\n\n\n" | $SNAP/sbin/tinc -c $SNAP_DATA/tinc generate-keys 4096
+
+		# If tinc choosed another name, rename it.
+		if [ x$(ls -1 $SNAP_DATA/tinc/hosts/ | wc -l) == x1 ]; then
+			mv $SNAP_DATA/tinc/hosts/* $SNAP_DATA/tinc/hosts/$(tinc_name)
+		fi
+	fi
+
 }
 
 while [ -f $SNAP_DATA/tunnel/interfaces_needed ]; do

@@ -15,41 +15,47 @@ default_ip() {
 	ip r g 8.8.8.8 | grep src | sed 's/.*src *\([^ ]*\).*/\1/'
 }
 
-echo "
+echo "\
+# This file is written by the configure hook by snapd.
+# The file will be overwritten, see: tunnel config
+
 BRIDGE=$(get_value bridge tunnel0)
 MODE=$(get_value mode switch)
 TINC_PORT=$(get_value port 655)
-IP4ADDR=$(get_value ip4addr $(default_ip))
-" | grep = | sort > "$SNAP_DATA/tunnel/tunnel.conf"
+IP4ADDR=$(get_value ip4addr $(default_ip))" \
+> "$SNAP_DATA/tunnel/tunnel.conf"
 
 . $SNAP_DATA/tunnel/tunnel.conf
 
-echo "
+echo "\
+# This file is written by the configure hook by snapd.
+# The file will be overwritten, see: tunnel config
+
 Name = $(tinc_name)
 Mode = $MODE
 GraphDumpFile = $SNAP_DATA/tunnel/network.dot
-Port = $TINC_PORT
-" > $SNAP_DATA/tinc/tinc.conf
+Port = $TINC_PORT" \
+> $SNAP_DATA/tinc/tinc.conf
 
-echo "
+echo "\
 #!/bin/bash
+# This file is written by the configure hook by snapd.
+# The file will be overwritten, see: tunnel config
+
 brctl addif $BRIDGE \$INTERFACE
-ip link set dev \$INTERFACE up
-" > $SNAP_DATA/tinc/tinc-up
+ip link set dev \$INTERFACE up" \
+> $SNAP_DATA/tinc/tinc-up
 chmod +x $SNAP_DATA/tinc/tinc-up
 
-echo "
+echo "\
 #!/bin/bash
-ip link set dev \$INTERFACE down
-brctl delif $BRIDGE \$INTERFACE
-" > $SNAP_DATA/tinc/tinc-down
-chmod +x $SNAP_DATA/tinc/tinc-down
+# This file is written by the configure hook by snapd.
+# The file will be overwritten, see: tunnel config
 
-mkdir -p $SNAP_DATA/tinc/hosts
-echo "
-Address = $IP4ADDR
-$(cat $SNAP_DATA/tinc/rsa_key.pub)
-" > $SNAP_DATA/tinc/hosts/$(tinc_name)
+ip link set dev \$INTERFACE down
+brctl delif $BRIDGE \$INTERFACE" \
+> $SNAP_DATA/tinc/tinc-down
+chmod +x $SNAP_DATA/tinc/tinc-down
 
 snapctl stop tunnel.tinc
 snapctl start tunnel.tinc

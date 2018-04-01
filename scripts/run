@@ -13,28 +13,34 @@ underline() { echo -ne "\e[4m${@}\e[0m"; }
 
 if [ -f $SNAP_DATA/tunnel/interfaces_needed ]; then
 	echo "+----------------------------------------------------------------------+"
-	echo "| You need to connect the interfaces tunnel:network-control and        |"
-	echo "| tunnel:network-setup-control to this snap. This snap needs the       |"
-	echo "| permissions to add bridges and setup the tunnel.                     |"
+	echo "| You need to connect a few interfaces to this snap. This snap needs   |"
+	echo "| the permissions to add bridges and setup the tunnel.                 |"
 	echo "|                                                                      |"
-	echo "| # snap connect tunnel:network-control                                |"
-	echo "| # snap connect tunnel:network-setup-control                          |"
-	echo "| # snap connect tunnel:network-observe                                |"
+	echo "| # $(bold snap connect tunnel:network-control)                                |"
+	echo "| # $(bold snap connect tunnel:network-setup-control)                          |"
+	echo "| # $(bold snap connect tunnel:network-observe)                                |"
 	echo "|                                                                      |"
-	echo "| Then type \"snap refresh tunnel\" to reload.                           |"
+	echo "| Then type \"$(bold snap refresh tunnel)\" to reload.                           |"
 	echo "|                                                                      |"
-	echo "| ... or just type: \"tunnel.setup | bash\"                              |"
-	echo "+-----------------------------------------------------------------------"
+	echo "| ... or just type: \"$(bold "tunnel.setup | sudo bash")\"                         |"
+	echo "+----------------------------------------------------------------------+"
 	exit 0
 fi
 
 usage() {
-	echo "$(bold "tunnel [-hH] [invite|config]")"
+	echo "$(bold "tunnel [-hy] [-t type] [invite|config]")"
 	echo "  $(bold -h)          Show help for the following command."
-	echo "  $(bold -H)          Print command specific help messages."
+	echo "  $(bold -y)          Answer yes to all questions."
+	echo "  $(bold -t) $(dim "type")     Select type/question. For scripts."
 	echo
-	echo "  $(bold invite)          Invite a remote machine to join the network."
+	echo "  $(bold invite) $(dim "[name]")   Invite a remote machine to join the network."
+	echo "  $(bold join) $(dim "[invite]")   Join a network from an invitation."
 	echo "  $(bold config)          Print configuration options."
+	echo
+	echo " Advanced:"
+	echo "  $(bold tinc) $(dim "[cmd]")      Exec raw tinc commands."
+	echo
+	echo "Config and logs at: $SNAP_DATA"
 	echo
 	echo "If this is your first time using tunnel, I recommend that you run"
 	echo "the config command $(bold tunnel config) and read $(bold tunnel about)."
@@ -43,15 +49,15 @@ usage() {
 
 config() {
 	echo "Tunnel uses the snapd configuration options. Set options"
-	echo "with \"$(bold "sudo snap tunnel set key=value")\"."
+	echo "with \"$(bold "sudo snap set tunnel key=value")\"."
 	echo
-	echo "$(dim sudo snap tunnel set) $(bold "bridge=$BRIDGE")"
-	echo "$(dim sudo snap tunnel set) $(bold "ip4addr=$IP4ADDR")"
-	echo "$(dim sudo snap tunnel set) $(bold "mode=$MODE")"
-	echo "$(dim sudo snap tunnel set) $(bold "port=$TINC_PORT")"
+	echo "$(dim sudo snap set tunnel) $(bold "bridge=$BRIDGE")"
+	echo "$(dim sudo snap set tunnel) $(bold "ip4addr=$IP4ADDR")"
+	echo "$(dim sudo snap set tunnel) $(bold "mode=$MODE")"
+	echo "$(dim sudo snap set tunnel) $(bold "port=$TINC_PORT")"
 	echo
 	echo "To restore a value to it's default value, set it to an empty"
-	echo "string, like \"$(bold "sudo snap tunnel key=")\""
+	echo "string, like \"$(bold "sudo snap set tunnel key=")\""
 }
 
 about() {
@@ -61,21 +67,19 @@ about() {
 	echo "is reachable, and that $(bold $IP4ADDR) points to the right place."
 	echo "See $(bold tunnel config) for how to change these values."
 	echo
-	echo "You only need one tunnel instance exposed, but for a faster and more robust"
-	echo "network it's recommended to use serveral. You can then connect to any "
-	echo "installation that you have access to."
-	echo
 	echo "For more information see: https://www.tinc-vpn.org"
 }
 
-#p=${OPTARG}
-while getopts ":sH" o; do
+while getopts ":syt:" o; do
 	case "${o}" in
 		s)
 			exec bash
 			;;
-		H)
-			HELP_COMMAND=yes
+		y)
+			ALWAYS_YES=yes
+			;;
+		t)
+			TYPE_SELECT=${OPTARG}
 			;;
 		*)
 			usage
@@ -86,34 +90,60 @@ shift $((OPTIND-1))
 
 case "$1" in
 	invite)
-		if [ x$HELP_COMMAND == xyes ]; then
-			echo "To invite $(underline this) host type the following on remote host:"
-			echo "$(bold sudo tunnel invite $(tinc_name))"
-			exit 0
+		if [ $UID != 0 ]; then
+			echo "You need to run this as root, try $(bold sudo $0 ...)"
+			exit 1
+		fi
+
+		invitename=$2
+		if [ -z $invitename ]; then
+			echo "You need to specify the hostname of the host you like to invite."
+			echo -n "> "; read invitename
+			if [ x$invitename == x ]; then
+				echo "Hostname needs to be a non-zero string"
+				exit 1
+			fi
+		fi
+
+		echo "Invitation generated for $invitename, this is your URL:"
+		tinc -c $SNAP_DATA/tinc/ invite $invitename | tee $SNAP_DATA/invite
+		echo
+		echo "On the $(underline other) system, type this:"
+		echo "sudo tunnel join $(cat $SNAP_DATA/invite)"
+		rm $SNAP_DATA/invite
+		;;
+	join)
+		if [ $UID != 0 ]; then
+			echo "You need to run this as root, try $(bold sudo $0 ...)"
+			exit 1
 		fi
 
 		if [ -z $2 ]; then
-			echo "You need to specify the hostname of the host you like to invite."
-			echo -n "If you are unsure, type \"$(bold tunnel -H invite)\" on "
-			echo "the $(underline other) host."
-		else
-			if [ $UID != 0 ]; then
-				echo "You need to run this as root, add sudo in front of the command."
-			else
-				echo "An invitation generated for $2, this is your URL:"
-				tinc -c $SNAP_DATA/tinc/ invite $2 | tee $SNAP_DATA/invite
-				echo
-				echo "On the $(underline other) system, type this:"
-				echo "sudo tunnel join $(cat $SNAP_DATA/invite)"
-				rm $SNAP_DATA/invite
-			fi
+			echo "You need to specify the invite uri provided from the other host."
+			echo "Example: $(bold tunnel join 123.45.678.9:655/AytuIg...)"
+			exit 1
 		fi
+
+		echo "Warning: Joining a network will re-key this systems identy."
+		echo "Any hosts that connects $(underline directly) to this host will fail."
+		if [ x$ALWAYS_YES != xyes ]; then
+			echo "Press enter to continue"
+			read
+		fi
+
+		rm $SNAP_DATA/tinc/tinc.conf
+		tinc -c $SNAP_DATA/tinc/ join $2
+		$SNAP/meta/hooks/configure
 		;;
 	config)
 		config
 		;;
 	about)
 		about
+		;;
+	tinc)
+		shift
+		tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
 		;;
 	*)
 		usage
