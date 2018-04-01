@@ -52,5 +52,4 @@ brctl delif $BRIDGE \$INTERFACE" \
 > $SNAP_DATA/tinc/tinc-down
 chmod +x $SNAP_DATA/tinc/tinc-down
 
-snapctl stop tunnel.tinc
-snapctl start tunnel.tinc
+snapctl restart tunnel.tinc
