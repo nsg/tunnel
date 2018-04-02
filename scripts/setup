@@ -3,3 +3,4 @@
 echo snap connect tunnel:network-control
 echo snap connect tunnel:network-setup-control
 echo snap connect tunnel:network-observe
+echo snap set tunnel dummy= # run configure hook

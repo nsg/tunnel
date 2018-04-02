@@ -51,21 +51,37 @@ config() {
 	echo "Tunnel uses the snapd configuration options. Set options"
 	echo "with \"$(bold "sudo snap set tunnel key=value")\"."
 	echo
-	echo "$(dim sudo snap set tunnel) $(bold "bridge=$BRIDGE")"
-	echo "$(dim sudo snap set tunnel) $(bold "mode=$MODE")"
-	echo "$(dim sudo snap set tunnel) $(bold "port=$TINC_PORT")"
+	echo "Choose the network bridge to use:"
+	echo "  $(dim sudo snap set tunnel) $(bold "bridge=$BRIDGE")"
+	echo "  Tunnel will create non-existent bridges."
+	echo
+	echo "Select package routing mode:"
+	echo "  $(dim sudo snap set tunnel) $(bold "mode=$MODE")"
+	echo "  The options are: router, switch and hub."
+	echo
+	echo "Change the port tinc uses:"
+	echo "  $(dim sudo snap set tunnel) $(bold "port=$TINC_PORT")"
+	echo
+	echo "A colons separated list if nodes to connect to:"
+	echo "  $(dim sudo snap set tunnel) $(bold "connect=$CONNECTTO")"
+	echo "  Not to be confused with the nodes IP/FQDN."
 	echo
 	echo "To restore a value to it's default value, set it to an empty"
 	echo "string, like \"$(bold "sudo snap set tunnel key=")\""
+	echo
+	echo "See: https://www.tinc-vpn.org/documentation-1.1/Main-configuration-variables.html"
 }
 
 about() {
+	echo "Tunnel is based a collection of several softwares, but the main"
+	echo "component is the software Tinc (https://www.tinc-vpn.org). Tinc"
+	echo "has several advanced features that tunnel does not support. If"
+	echo "you need them I recommend that you install Tinc your self."
+	echo
 	echo "There are no dedicated server or client. Any tunnel installation can"
 	echo "connect to any other installation, assuming it's reachable. For a"
 	echo "installation to be reachable you need to make sure that port $(bold $TINC_PORT) TCP/UDP"
 	echo "is reachable. See $(bold tunnel config) for how to change these values."
-	echo
-	echo "For more information see: https://www.tinc-vpn.org"
 }
 
 while getopts ":syt:" o; do
@@ -103,6 +119,20 @@ case "$1" in
 			fi
 		fi
 
+		if [ -f $SNAP_DATA/tinc/hosts/$invitename ]; then
+			if [ x$ALWAYS_YES != xyes ]; then
+				echo -n "$invitename already exists, purge unreachable nodes? (yes/no) "
+				read x
+			fi
+
+			if [ x$ALWAYS_YES == xyes ] || [ x$x == xyes ]; then
+				tinc -c $SNAP_DATA/tinc/ purge
+				rm $SNAP_DATA/tinc/hosts/$invitename
+			else
+				exit 0
+			fi
+		fi
+
 		echo "Invitation generated for $invitename, this is your URL:"
 		tinc -c $SNAP_DATA/tinc/ invite $invitename | tee $SNAP_DATA/invite
 		echo
@@ -122,15 +152,27 @@ case "$1" in
 			exit 1
 		fi
 
-		echo "Warning: Joining a network will re-key this systems identy."
+		echo "Warning: Joining a network will re-key this systems identity."
 		echo "Any hosts that connects $(underline directly) to this host will fail."
 		if [ x$ALWAYS_YES != xyes ]; then
-			echo "Press enter to continue"
-			read
+			echo -n "Change the identity of $(tinc_name) (yes/no) "
+			read x
+			if [ x$x != xyes ]; then
+				exit 0
+			fi
 		fi
 
+		# We need to remove the old config for the join operation to succeed.
 		rm $SNAP_DATA/tinc/tinc.conf
+
+		# Join the remote tinc node
 		tinc -c $SNAP_DATA/tinc/ join $2
+
+		# Extract the new nodes name from the generated config and add it to config.
+		NEW_NODE=$(awk -F'=' '/ConnectTo/{ print $2 }' $SNAP_DATA/tinc/tinc.conf)
+		snapctl set connect=${NEW_NODE//[[:space:]]/}
+
+		# Rebuild our tinc.conf
 		$SNAP/meta/hooks/configure
 		;;
 	config)

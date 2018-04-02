@@ -17,8 +17,9 @@ echo "\
 
 BRIDGE=$(get_value bridge tunnel0)
 MODE=$(get_value mode switch)
-TINC_PORT=$(get_value port 655)" \
-> "$SNAP_DATA/tunnel/tunnel.conf"
+TINC_PORT=$(get_value port 655)
+CONNECTTO=$(get_value connect)
+" > "$SNAP_DATA/tunnel/tunnel.conf"
 
 . $SNAP_DATA/tunnel/tunnel.conf
 
@@ -29,8 +30,12 @@ echo "\
 Name = $(tinc_name)
 Mode = $MODE
 GraphDumpFile = $SNAP_DATA/tunnel/network.dot
-Port = $TINC_PORT" \
-> $SNAP_DATA/tinc/tinc.conf
+Port = $TINC_PORT
+" > $SNAP_DATA/tinc/tinc.conf
+
+for host in ${CONNECTTO/:/ }; do
+	echo "ConnectTo=$host" >> $SNAP_DATA/tinc/tinc.conf
+done
 
 echo "\
 #!/bin/bash
