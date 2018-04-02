@@ -28,7 +28,7 @@ if [ -f $SNAP_DATA/tunnel/interfaces_needed ]; then
 fi
 
 usage() {
-	echo "$(bold "tunnel [-hy] [-t type] [invite|config]")"
+	echo "$(bold "tunnel [-hy] [-t type] [command ...]")"
 	echo "  $(bold -h)          Show help for the following command."
 	echo "  $(bold -y)          Answer yes to all questions."
 	echo "  $(bold -t) $(dim "type")     Select type/question. For scripts."
