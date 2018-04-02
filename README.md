@@ -105,8 +105,8 @@ see "tunnel config".
 
 ### Invite & Join
 
-This exposes the Invite and Join feature from Tinc. This is useful if you
-like to connect a newly installed system to a Tinc node. The Join operation
+This exposes the invite and join feature from Tinc. This is useful if you
+like to connect a newly installed system to a Tinc node. The join operation
 re-keys the client, and there is no option to disable that, so do not run
 join on an existing installation that you use for other things.
 
