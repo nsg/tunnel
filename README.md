@@ -110,9 +110,7 @@ like to connect a newly installed system to a Tinc node. The join operation
 re-keys the client, and there is no option to disable that, so do not run
 join on an existing installation that you use for other things.
 
-I'm considering fixing this in the future.
-
-Also not that this is a Tinc 1.1+ feature.
+Also note that this is a Tinc 1.1+ feature.
 
 ### Tinc raw command
 
