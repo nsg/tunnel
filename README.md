@@ -93,7 +93,7 @@ Now run the suggested command on the laptop:
 laptop> sudo tunnel join 123.45.678.9:655/gLnKky5hkJxCab_p7WR85pfYujGdqYiuWlsL9ZZ0
 ```
 
-All done, `tunnel0` on the server and laptop are now connected.
+All done, the bridge `tunnel0` on the server and laptop are now connected.
 
 #### Finally
 
