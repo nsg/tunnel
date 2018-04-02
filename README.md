@@ -110,8 +110,18 @@ like to connect a newly installed system to a Tinc node. The join operation
 re-keys the client, and there is no option to disable that, so do not run
 join on an existing installation that you use for other things.
 
-Also note that this is a Tinc 1.1+ feature.
+Note that this is a Tinc 1.1+ feature, do not expect to be able to join a
+tinc 1.0 installation with this command.
 
 ### Tinc raw command
 
 Just forward the commands to tinc.
+
+### Add a node the classic way
+
+Exchange the hosts-keys the normal way. This also works with older
+installations. The host keys are installed in `$SNAP_DATA/tinc/hosts`
+with is most likely `/var/snap/tunnel/current/tinc/hosts/`.
+
+Then tell tunnel to connect to these hosts with
+`snap set tunnel connect=host1:host2`
