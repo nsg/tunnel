@@ -21,6 +21,14 @@ The tunnel may also be restarted when snapd updates this snap, or when you
 change any settings. This is expected behavior, if you can't handle rare
 short disconnects please do not use this snap.
 
+## Install
+
+I use the build services at [build.snapcraft.io](https://build.snapcraft.io/user/nsg/tunnel)
+to build this snap. Master of this repository is published to the edge
+channel. Try it with `snap install --edge tunnel`.
+
+The get the latest stable version, type `snap install tunnel`.
+
 ## Why tunnel and not just tinc?
 
 There is a little setup you need to do like create a tinc.conf, tinc-up
