@@ -100,3 +100,20 @@ All done, the bridge `tunnel0` on the server and laptop are now connected.
 Note that at this point you need to configure both the server and your client to
 route/forward traffic over the tunnel. There is a few options for that in tunnel,
 see "tunnel config".
+
+## Supported operations
+
+### Invite & Join
+
+This exposes the Invite and Join feature from Tinc. This is useful if you
+like to connect a newly installed system to a Tinc node. The Join operation
+re-keys the client, and there is no option to disable that, so do not run
+join on an existing installation that you use for other things.
+
+I'm considering fixing this in the future.
+
+Also not that this is a Tinc 1.1+ feature.
+
+### Tinc raw command
+
+Just forward the commands to tinc.
