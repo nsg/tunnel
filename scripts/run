@@ -28,8 +28,8 @@ if [ -f $SNAP_DATA/tunnel/interfaces_needed ]; then
 fi
 
 usage() {
-	echo "$(bold "tunnel [-hy] [-t type] [command ...]")"
-	echo "  $(bold -h)          Show help for the following command."
+	echo "$(bold "tunnel [-hy] [-t type] [COMMAND ...]")"
+	echo "  $(bold -h)          Show help for $(bold COMMAND)."
 	echo "  $(bold -y)          Answer yes to all questions."
 	echo "  $(bold -t) $(dim "type")     Select type/question. For scripts."
 	echo
@@ -73,10 +73,10 @@ config() {
 }
 
 about() {
-	echo "Tunnel is based a collection of several softwares, but the main"
+	echo "Tunnel is based on a collection of several softwares, but the main"
 	echo "component is the software Tinc (https://www.tinc-vpn.org). Tinc"
-	echo "has several advanced features that tunnel does not support. If"
-	echo "you need them I recommend that you install Tinc your self."
+	echo "has several advanced features that tunnel does not support. If you"
+	echo "need them I recommend that you install and use Tinc."
 	echo
 	echo "There are no dedicated server or client. Any tunnel installation can"
 	echo "connect to any other installation, assuming it's reachable. For a"
@@ -105,7 +105,7 @@ shift $((OPTIND-1))
 case "$1" in
 	invite)
 		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo $0 ...)"
+			echo "You need to run this as root, try $(bold sudo tunnel $@)"
 			exit 1
 		fi
 
@@ -142,7 +142,7 @@ case "$1" in
 		;;
 	join)
 		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo $0 ...)"
+			echo "You need to run this as root, try $(bold sudo tunnel $@)"
 			exit 1
 		fi
 
@@ -183,6 +183,10 @@ case "$1" in
 		;;
 	tinc)
 		shift
+		if [ $UID != 0 ]; then
+			echo "You need to run this as root, try $(bold sudo tunnel $@)"
+			exit 1
+		fi
 		tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
 		;;
 	*)
