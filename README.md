@@ -47,12 +47,10 @@ recommend that you take your time to install tinc yourself.
 Do a `snap install tunnel` on all your systems. At least one need to
 have a public exposed port. Run `tunnel` to get started.
 
-### Connect two hosts with invite and join
-
 Let's assume that you have a server, with the hostname "server" and
 a laptop with the hostname "laptop".
 
-#### Install and setup permissions
+### Install and setup permissions
 
 Install it on both systems:
 
@@ -72,7 +70,7 @@ laptop> tunnel.setup | sudo bash
 All done, if you need to change the port on the server, run
 `tunnel config`.
 
-#### Invite and join
+### Connect two hosts with invite and join
 
 Invite the laptop from the server.
 
