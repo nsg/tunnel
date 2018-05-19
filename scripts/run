@@ -37,6 +37,12 @@ usage() {
 	echo "  $(bold join) $(dim "[invite]")   Join a network from an invitation."
 	echo "  $(bold config)          Print configuration options."
 	echo "  $(bold name)            Print this systems name."
+	echo "  $(bold top)             List connections and statistics."
+	echo "  $(bold import)          Manually import keys from another system (stdin)"
+	echo "  $(bold export)          Manually export keys from this system (stdout)"
+	echo "  $(bold export-all)      Like above, but export all keys."
+	echo "  $(bold exchange)        Export and import in one go."
+	echo "  $(bold exchange-all)    Like above, but all with keys."
 	echo
 	echo " Advanced:"
 	echo "  $(bold tinc) $(dim "[cmd]")      Exec raw tinc commands."
@@ -227,6 +233,14 @@ case "$1" in
 			exit 1
 		fi
 		tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
+		;;
+	top|import|export|export-all|exchange|exchange-all)
+		if [ "x$SHOW_HELP_SECTION" == xyes ]; then
+			tinc --help | grep -E "^ *$1 "
+			exit 0
+		fi
+
+		$0 tinc $1
 		;;
 	name)
 		echo "This system is called $(bold $(tinc_name))"
