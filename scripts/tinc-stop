@@ -2,4 +2,4 @@
 
 . $SNAP_DATA/tunnel/tunnel.conf
 
-exec tincd -k TERM --pidfile=$SNAP_DATA/tinc/pid
+exec tinc -c $SNAP_DATA/tinc --pidfile=$SNAP_DATA/tinc/pid stop
