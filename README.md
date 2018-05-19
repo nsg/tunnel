@@ -82,7 +82,6 @@ Trying to discover externally visible hostname...
 
 On the other system, type this:
 sudo tunnel join 123.45.678.9:655/gLnKky5hkJxCab_p7WR85pfYujGdqYiuWlsL9ZZ0
-
 ```
 
 Now run the suggested command on the laptop:

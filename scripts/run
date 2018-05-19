@@ -38,13 +38,14 @@ usage() {
 	echo "  $(bold config)          Print configuration options."
 	echo "  $(bold name)            Print this systems name."
 	echo "  $(bold top)             List connections and statistics."
-	echo "  $(bold import)          Manually import keys from another system (stdin)"
-	echo "  $(bold export)          Manually export keys from this system (stdout)"
+	echo "  $(bold export)          Export this systems keys"
+	echo "  $(bold add)             Add another systems exported keys."
+	echo
+	echo " Advanced:"
+	echo "  $(bold import)          Manually import keys from another system."
 	echo "  $(bold export-all)      Like above, but export all keys."
 	echo "  $(bold exchange)        Export and import in one go."
 	echo "  $(bold exchange-all)    Like above, but all with keys."
-	echo
-	echo " Advanced:"
 	echo "  $(bold tinc) $(dim "[cmd]")      Exec raw tinc commands."
 	echo
 	echo "Config and logs at: $SNAP_DATA"
@@ -113,6 +114,12 @@ help_join() {
 	echo
 	echo "Note that this is a Tinc 1.1+ feature, do not expect to be able to"
 	echo "join a tinc 1.0 installation with this command."
+
+	exit 0
+}
+
+help_add() {
+	echo "This is an import followed by and automatic \"snap set tunnel connect\""
 
 	exit 0
 }
@@ -233,6 +240,22 @@ case "$1" in
 			exit 1
 		fi
 		tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
+		;;
+	add)
+		[ "x$SHOW_HELP_SECTION" == xyes ] && help_add
+
+		echo "Paste the output of \"tunnel export\" from the other node."
+		echo "After the paste, press control-d to save this new node."
+		cat > $SNAP_DATA/tmp/import-data
+		cat $SNAP_DATA/tmp/import-data | $0 tinc import
+		c="$(snapctl get connect)"
+		if [ "x$c" == x ]; then
+			c="$(awk '/Name/{ print $NF }' $SNAP_DATA/tmp/import-data)"
+		else
+			c="$c:$(awk '/Name/{ print $NF }' $SNAP_DATA/tmp/import-data)"
+		fi
+		snapctl set connect=$c
+		rm $SNAP_DATA/tmp/import-data
 		;;
 	top|import|export|export-all|exchange|exchange-all)
 		if [ "x$SHOW_HELP_SECTION" == xyes ]; then
