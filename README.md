@@ -47,7 +47,7 @@ recommend that you take your time to install tinc yourself.
 Do a `snap install tunnel` on all your systems. At least one need to
 have a public exposed port. Run `tunnel` to get started.
 
-### Connect two hosts
+### Connect two hosts with invite and join
 
 Let's assume that you have a server, with the hostname "server" and
 a laptop with the hostname "laptop".
@@ -101,27 +101,25 @@ Note that at this point you need to configure both the server and your client to
 route/forward traffic over the tunnel. There is a few options for that in tunnel,
 see "tunnel config".
 
-## Supported operations
-
-### Invite & Join
-
-This exposes the invite and join feature from Tinc. This is useful if you
-like to connect a newly installed system to a Tinc node. The join operation
-re-keys the client, and there is no option to disable that, so do not run
-join on an existing installation that you use for other things.
-
 Note that this is a Tinc 1.1+ feature, do not expect to be able to join a
 tinc 1.0 installation with this command.
 
-### Tinc raw command
+### Connect two hosts with exchange
 
-Just forward the commands to tinc.
+Run `tunnel exchange` on both hosts, exchange and paste the output and press
+control-d. Alternatively use `tunnel export/import`
 
-### Add a node the classic way
+```
+server> tunnel exchange
+(a lot of output, paste this on client)
 
-Exchange the hosts-keys the normal way. This also works with older
-installations. The host keys are installed in `$SNAP_DATA/tinc/hosts`
-with is most likely `/var/snap/tunnel/current/tinc/hosts/`.
+client> tunnel exchange
+(a lot of output, paste this on server)
+```
 
-Then tell tunnel to connect to these hosts with
-`snap set tunnel connect=host1:host2`
+Now connect both nodes to each other
+
+```
+server> snap set tunnel connect=client
+client> snap set tunnel connect=server
+```
