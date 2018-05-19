@@ -40,6 +40,7 @@ usage() {
 	echo "  $(bold top)             List connections and statistics."
 	echo "  $(bold export)          Export this systems keys"
 	echo "  $(bold add)             Add another systems exported keys."
+	echo "  $(bold restart)         Restart tincd service."
 	echo
 	echo " Advanced:"
 	echo "  $(bold import)          Manually import keys from another system."
@@ -264,6 +265,14 @@ case "$1" in
 		fi
 
 		$0 tinc $1
+		;;
+	restart)
+		if [ $UID != 0 ]; then
+			echo "You need to run this as root, try $(bold sudo tunnel $@)"
+			exit 1
+		fi
+
+		snapctl restart tunnel.tinc
 		;;
 	name)
 		echo "This system is called $(bold $(tinc_name))"
