@@ -36,6 +36,7 @@ usage() {
 	echo "  $(bold invite) $(dim "[name]")   Invite a remote machine to join the network."
 	echo "  $(bold join) $(dim "[invite]")   Join a network from an invitation."
 	echo "  $(bold config)          Print configuration options."
+	echo "  $(bold name)            Print this systems name."
 	echo
 	echo " Advanced:"
 	echo "  $(bold tinc) $(dim "[cmd]")      Exec raw tinc commands."
@@ -84,7 +85,33 @@ about() {
 	echo "is reachable. See $(bold tunnel config) for how to change these values."
 }
 
-while getopts ":syt:" o; do
+help_invite() {
+	echo "This exposes the invite feature from Tinc. This is useful if you like"
+	echo "to invite another tunnel installation to this server."
+	echo
+	echo "This command will generate an invite for the system called \"laptop\"."
+	echo "If you are unsure what the name is, type \"tunnel name\" on the laptop."
+	echo "  tinc $(bold invite) $(dim "laptop")"
+	echo
+	echo "Note that this is a Tinc 1.1+ feature, do not expect to be able to"
+	echo "invite a Tinc 1.0 installation with this command."
+
+	exit 0
+}
+
+help_join() {
+	echo "This exposes the join feature from Tinc. This is useful if you like to"
+	echo "connect a newly installed system to a Tinc node. The join operation"
+	echo "re-keys the client (this system). Do not run join on an existing"
+	echo "installation if you like to keep the old keys/configuration."
+	echo
+	echo "Note that this is a Tinc 1.1+ feature, do not expect to be able to"
+	echo "join a tinc 1.0 installation with this command."
+
+	exit 0
+}
+
+while getopts ":syht:" o; do
 	case "${o}" in
 		s)
 			exec bash
@@ -95,6 +122,9 @@ while getopts ":syt:" o; do
 		t)
 			TYPE_SELECT=${OPTARG}
 			;;
+		h)
+			SHOW_HELP_SECTION=yes
+			;;
 		*)
 			usage
 			;;
@@ -104,6 +134,8 @@ shift $((OPTIND-1))
 
 case "$1" in
 	invite)
+		[ "x$SHOW_HELP_SECTION" == xyes ] && help_invite
+
 		if [ $UID != 0 ]; then
 			echo "You need to run this as root, try $(bold sudo tunnel $@)"
 			exit 1
@@ -141,6 +173,8 @@ case "$1" in
 		rm $SNAP_DATA/invite
 		;;
 	join)
+		[ "x$SHOW_HELP_SECTION" == xyes ] && help_join
+
 		if [ $UID != 0 ]; then
 			echo "You need to run this as root, try $(bold sudo tunnel $@)"
 			exit 1
@@ -182,12 +216,20 @@ case "$1" in
 		about
 		;;
 	tinc)
+		if [ "x$SHOW_HELP_SECTION" == xyes ]; then
+			tinc --help
+			exit 0
+		fi
+
 		shift
 		if [ $UID != 0 ]; then
 			echo "You need to run this as root, try $(bold sudo tunnel $@)"
 			exit 1
 		fi
 		tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
+		;;
+	name)
+		echo "This system is called $(bold $(tinc_name))"
 		;;
 	*)
 		usage
