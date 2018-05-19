@@ -101,22 +101,12 @@ see "tunnel config".
 Note that this is a Tinc 1.1+ feature, do not expect to be able to join a
 tinc 1.0 installation with this command.
 
-### Connect two hosts with exchange
+### Connect two hosts with add
 
-Run `tunnel exchange` on both hosts, exchange and paste the output and press
-control-d. Alternatively use `tunnel export/import`
-
-```
-server> tunnel exchange
-(a lot of output, paste this on client)
-
-client> tunnel exchange
-(a lot of output, paste this on server)
-```
-
-Now connect both nodes to each other
+Run `tunnel add` on the client and follow the instructions.
 
 ```
-server> snap set tunnel connect=client
-client> snap set tunnel connect=server
+server> tunnel export
+client> tunnel add
+(paste, and control-d)
 ```
