@@ -70,37 +70,6 @@ laptop> tunnel.setup | sudo bash
 All done, if you need to change the port on the server, run
 `tunnel config`.
 
-### Connect two hosts with invite and join
-
-Invite the laptop from the server.
-
-```
-server> sudo tunnel invite laptop
-Invitation generated for laptop, this is your URL:
-Trying to discover externally visible hostname...
-123.45.678.9:655/gLnKky5hkJxCab_p7WR85pfYujGdqYiuWlsL9ZZ0
-
-On the other system, type this:
-sudo tunnel join 123.45.678.9:655/gLnKky5hkJxCab_p7WR85pfYujGdqYiuWlsL9ZZ0
-```
-
-Now run the suggested command on the laptop:
-
-```
-laptop> sudo tunnel join 123.45.678.9:655/gLnKky5hkJxCab_p7WR85pfYujGdqYiuWlsL9ZZ0
-```
-
-All done, the bridge `tunnel0` on the server and laptop are now connected.
-
-#### Finally
-
-Note that at this point you need to configure both the server and your client to
-route/forward traffic over the tunnel. There is a few options for that in tunnel,
-see "tunnel config".
-
-Note that this is a Tinc 1.1+ feature, do not expect to be able to join a
-tinc 1.0 installation with this command.
-
 ### Connect two hosts with add
 
 Run `tunnel add` on the client and follow the instructions.

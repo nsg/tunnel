@@ -33,8 +33,6 @@ usage() {
 	echo "  $(bold -y)          Answer yes to all questions."
 	echo "  $(bold -t) $(dim "type")     Select type/question. For scripts."
 	echo
-	echo "  $(bold invite) $(dim "[name]")   Invite a remote machine to join the network."
-	echo "  $(bold join) $(dim "[invite]")   Join a network from an invitation."
 	echo "  $(bold config)          Print configuration options."
 	echo "  $(bold name)            Print this systems name."
 	echo "  $(bold top)             List connections and statistics."
@@ -71,7 +69,7 @@ config() {
 	echo "Change the port tinc uses:"
 	echo "  $(dim sudo snap set tunnel) $(bold "port=$TINC_PORT")"
 	echo
-	echo "A colons separated list if nodes to connect to:"
+	echo "A colons separated list if node names to connect to:"
 	echo "  $(dim sudo snap set tunnel) $(bold "connect=$CONNECTTO")"
 	echo "  Not to be confused with the nodes IP/FQDN."
 	echo
@@ -91,32 +89,6 @@ about() {
 	echo "connect to any other installation, assuming it's reachable. For a"
 	echo "installation to be reachable you need to make sure that port $(bold $TINC_PORT) TCP/UDP"
 	echo "is reachable. See $(bold tunnel config) for how to change these values."
-}
-
-help_invite() {
-	echo "This exposes the invite feature from Tinc. This is useful if you like"
-	echo "to invite another tunnel installation to this server."
-	echo
-	echo "This command will generate an invite for the system called \"laptop\"."
-	echo "If you are unsure what the name is, type \"tunnel name\" on the laptop."
-	echo "  tinc $(bold invite) $(dim "laptop")"
-	echo
-	echo "Note that this is a Tinc 1.1+ feature, do not expect to be able to"
-	echo "invite a Tinc 1.0 installation with this command."
-
-	exit 0
-}
-
-help_join() {
-	echo "This exposes the join feature from Tinc. This is useful if you like to"
-	echo "connect a newly installed system to a Tinc node. The join operation"
-	echo "re-keys the client (this system). Do not run join on an existing"
-	echo "installation if you like to keep the old keys/configuration."
-	echo
-	echo "Note that this is a Tinc 1.1+ feature, do not expect to be able to"
-	echo "join a tinc 1.0 installation with this command."
-
-	exit 0
 }
 
 help_add() {
@@ -147,82 +119,6 @@ done
 shift $((OPTIND-1))
 
 case "$1" in
-	invite)
-		[ "x$SHOW_HELP_SECTION" == xyes ] && help_invite
-
-		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo tunnel $@)"
-			exit 1
-		fi
-
-		invitename=$2
-		if [ -z $invitename ]; then
-			echo "You need to specify the hostname of the host you like to invite."
-			echo -n "> "; read invitename
-			if [ x$invitename == x ]; then
-				echo "Hostname needs to be a non-zero string"
-				exit 1
-			fi
-		fi
-
-		if [ -f $SNAP_DATA/tinc/hosts/$invitename ]; then
-			if [ x$ALWAYS_YES != xyes ]; then
-				echo -n "$invitename already exists, purge unreachable nodes? (yes/no) "
-				read x
-			fi
-
-			if [ x$ALWAYS_YES == xyes ] || [ x$x == xyes ]; then
-				tinc -c $SNAP_DATA/tinc/ purge
-				rm $SNAP_DATA/tinc/hosts/$invitename
-			else
-				exit 0
-			fi
-		fi
-
-		echo "Invitation generated for $invitename, this is your URL:"
-		tinc -c $SNAP_DATA/tinc/ invite $invitename | tee $SNAP_DATA/invite
-		echo
-		echo "On the $(underline other) system, type this:"
-		echo "sudo tunnel join $(cat $SNAP_DATA/invite)"
-		rm $SNAP_DATA/invite
-		;;
-	join)
-		[ "x$SHOW_HELP_SECTION" == xyes ] && help_join
-
-		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo tunnel $@)"
-			exit 1
-		fi
-
-		if [ -z $2 ]; then
-			echo "You need to specify the invite uri provided from the other host."
-			echo "Example: $(bold tunnel join 123.45.678.9:655/AytuIg...)"
-			exit 1
-		fi
-
-		echo "Warning: Joining a network will re-key this systems identity."
-		echo "Any hosts that connects $(underline directly) to this host will fail."
-		if [ x$ALWAYS_YES != xyes ]; then
-			echo -n "Change the identity of $(tinc_name) (yes/no) "
-			read x
-			if [ x$x != xyes ]; then
-				exit 0
-			fi
-		fi
-
-		# We need to remove the old config for the join operation to succeed.
-		rm $SNAP_DATA/tinc/tinc.conf
-
-		# Join the remote tinc node
-		tinc -c $SNAP_DATA/tinc/ join $2
-
-		# Extract the new nodes name from the generated config and add it to config.
-		NEW_NODE=$(awk -F'=' '/ConnectTo/{ print $2 }' $SNAP_DATA/tinc/tinc.conf)
-		snapctl set connect=${NEW_NODE//[[:space:]]/}
-
-		# Rebuild our tinc.conf
-		$SNAP/meta/hooks/configure
-		;;
 	config)
 		config
 		;;
