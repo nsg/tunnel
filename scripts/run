@@ -189,7 +189,10 @@ case "$1" in
 	list)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_list
 
-		ls -1 $SNAP_DATA/tinc/hosts/
+		for host in $(ls -1 $SNAP_DATA/tinc/hosts/); do
+			tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid info $host
+			echo
+		done
 		;;
 	export)
 		if [ $UID != 0 ]; then
