@@ -38,6 +38,7 @@ usage() {
 	echo "  $(bold top)             List connections and statistics."
 	echo "  $(bold export) $(dim "[name]")   Export this systems keys"
 	echo "  $(bold add)             Add another systems exported keys."
+	echo "  $(bold del) $(dim "[name]")      Remove another system."
 	echo "  $(bold list)            List added hosts."
 	echo "  $(bold restart)         Restart tincd service."
 	echo
@@ -94,6 +95,13 @@ about() {
 
 help_add() {
 	echo "This is an import followed by and automatic \"snap set tunnel connect\""
+
+	exit 0
+}
+
+help_del() {
+	echo "Remove an added/imported system. You can find the list of systems by running"
+	echo "the command $(bold tunnel list)."
 
 	exit 0
 }
@@ -167,6 +175,11 @@ case "$1" in
 		fi
 		snapctl set connect=$c
 		rm $SNAP_DATA/tmp/import-data
+		;;
+	del)
+		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
+
+		rm $SNAP_DATA/tinc/hosts/$2
 		;;
 	list)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_list
