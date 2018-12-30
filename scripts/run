@@ -52,7 +52,6 @@ usage() {
 	echo
 	echo "  $(bold config)          Print configuration options."
 	echo "  $(bold name)            Print this systems name."
-	echo "  $(bold export) $(dim "[name]")   Export this systems keys"
 	echo "  $(bold add)             Add another systems exported keys."
 	echo "  $(bold del) $(dim "[name]")      Remove another system."
 	echo "  $(bold list)            List added hosts."
@@ -125,13 +124,6 @@ help_del() {
 
 help_list() {
 	echo "List added hosts, type $(bold tunnel dump) $(dim name) to display the file."
-
-	exit 0
-}
-
-help_export() {
-	echo "Export host configuration of local node to standard output, or export"
-	echo "the specified hosts configuration file."
 
 	exit 0
 }
@@ -239,19 +231,6 @@ case "$1" in
 		echo "$(bold GRAPH______________________________________________________________)"
 		snap_tinc dump graph | graph-easy --from graphviz --as ascii 2>/dev/null
 		echo
-		;;
-	export)
-		root_check $@
-
-		[ "x$SHOW_HELP_SECTION" == xyes ] && help_export
-
-		if [ -z $2 ]; then
-			snap_tinc export
-		elif [ -f "$SNAP_DATA/tinc/hosts/$2" ]; then
-			cat "$SNAP_DATA/tinc/hosts/$2"
-		else
-			echo "host $2 not found"
-		fi
 		;;
 	restart)
 		root_check $@
