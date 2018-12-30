@@ -1,7 +1,7 @@
 ---
 
 name: tunnel
-version: '0.1'
+version: '0.2'
 summary: This snap connects computers in a private VPN
 description: |
   This snap uses Tinc (tinc-vpn.org) to setup a private encrypted secure
