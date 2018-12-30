@@ -38,7 +38,6 @@ usage() {
 	echo
 	echo "  $(bold config)          Print configuration options."
 	echo "  $(bold name)            Print this systems name."
-	echo "  $(bold top)             List connections and statistics."
 	echo "  $(bold export) $(dim "[name]")   Export this systems keys"
 	echo "  $(bold add)             Add another systems exported keys."
 	echo "  $(bold del) $(dim "[name]")      Remove another system."
@@ -46,10 +45,6 @@ usage() {
 	echo "  $(bold restart)         Restart tincd service."
 	echo
 	echo " Advanced:"
-	echo "  $(bold import)          Manually import keys from another system."
-	echo "  $(bold export-all)      Like above, but export all keys."
-	echo "  $(bold exchange)        Export and import in one go."
-	echo "  $(bold exchange-all)    Like above, but all with keys."
 	echo "  $(bold tinc) $(dim "[cmd]")      Exec raw tinc commands."
 	echo
 	echo "Config and logs at: $SNAP_DATA"
@@ -214,19 +209,6 @@ case "$1" in
 			echo "host $2 not found"
 		fi
 		;;
-	top|import|export-all|exchange|exchange-all)
-		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo tunnel $@)"
-			exit 1
-		fi
-
-		if [ "x$SHOW_HELP_SECTION" == xyes ]; then
-			tinc --help | grep -E "^ *$1 "
-			exit 0
-		fi
-
-		snap_tinc $1
-		;;
 	restart)
 		if [ $UID != 0 ]; then
 			echo "You need to run this as root, try $(bold sudo tunnel $@)"
@@ -236,7 +218,8 @@ case "$1" in
 		snapctl restart tunnel.tinc
 		;;
 	name)
-		echo "This system is called $(bold $(tinc_name))"
+		echo "This system is called $(bold $(tinc_name)), this is normalized" \
+			"version of your hostname $(bold $(hostname))." | fold -s
 		;;
 	*)
 		usage
