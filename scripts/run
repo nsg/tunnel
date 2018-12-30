@@ -174,17 +174,44 @@ case "$1" in
 	add)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_add
 		echo "Paste the output of \"tunnel tinc export\" from the other node." \
-			"After the paste, press control-d to save this new node." | fold -s
+			"After the paste, press control-d (^D) to save this new node." \
+			"To cancel press control-c (^C) now." | fold -s
+		echo "$(underline PASTE NOW:)"
 		cat > $SNAP_DATA/tmp/import-data
 		cat $SNAP_DATA/tmp/import-data | $0 tinc import
-		c="$(snapctl get connect)"
-		if [ "x$c" == x ]; then
-			c="$(awk '/Name/{ print $NF }' $SNAP_DATA/tmp/import-data)"
-		else
-			c="$c:$(awk '/Name/{ print $NF }' $SNAP_DATA/tmp/import-data)"
-		fi
-		snap_snapctl connect "$c"
+		new_c="$(awk '/Name/{ print $NF }' $SNAP_DATA/tmp/import-data)"
+		old_c="$(snapctl get connect)"
 		rm $SNAP_DATA/tmp/import-data
+
+		if [ "x$old_c" != x ]; then
+			c="$old_c:$new_c"
+		fi
+
+		snap_snapctl connect "$c"
+		echo "Connect is updated to $(bold $c), see $(bold tunnel config)." | fold -s
+	
+		echo "Please give me the IP or DNS name to $(bold $new_c)"
+		c_ip=
+		while ! $c_ip; do
+			echo -n "[?] > "; read c_ip
+		done
+
+		echo "What port? 655 is default."
+		echo -n "[655] > "; read c_port
+		if [ -z $c_port ]; then
+			c_port=655
+		fi
+
+		echo "What is to be considered as the local subnet. For example" \
+			"192.168.0.0/24 or 192.168.0.20/31 and so on?" | fold -s
+		c_subnet=
+		while ! $c_subnet; do
+			echo -n "[?] > "; read c_subnet
+		done
+
+		echo "Address = $c_ip" >> $SNAP_DATA/tinc/hosts/$new_c
+		echo "Port = $c_port" >> $SNAP_DATA/tinc/hosts/$new_c
+		echo "Subnet = $c_subnet" >> $SNAP_DATA/tinc/hosts/$new_c
 		;;
 	del)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
