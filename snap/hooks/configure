@@ -32,7 +32,6 @@ $(file_header)
 
 Name = $(tinc_name)
 Mode = $MODE
-GraphDumpFile = $SNAP_DATA/tunnel/network.dot
 Port = $TINC_PORT
 " > $SNAP_DATA/tinc/tinc.conf
 
