@@ -10,6 +10,13 @@ snap_tinc() {
 	tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
 }
 
+root_check() {
+	if [ $UID != 0 ]; then
+		echo "You need to run this as root, try $(bold sudo tunnel $@)"
+		exit 1
+	fi
+}
+
 bold() { echo -ne "\e[1m${@}\e[0m"; }
 dim() { echo -ne "\e[2m${@}\e[0m"; }
 inverted() { echo -ne "\e[7m${@}\e[0m"; }
@@ -153,10 +160,7 @@ case "$1" in
 		fi
 
 		shift
-		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo tunnel $@)"
-			exit 1
-		fi
+		root_check $@
 		snap_tinc $@
 		;;
 	add)
@@ -177,11 +181,7 @@ case "$1" in
 		;;
 	del)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
-
-		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo tunnel $@)"
-			exit 1
-		fi
+		root_check $@
 
 		rm $SNAP_DATA/tinc/hosts/$2
 		;;
@@ -194,10 +194,7 @@ case "$1" in
 		done
 		;;
 	export)
-		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo tunnel $@)"
-			exit 1
-		fi
+		root_check $@
 
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_export
 
@@ -210,11 +207,7 @@ case "$1" in
 		fi
 		;;
 	restart)
-		if [ $UID != 0 ]; then
-			echo "You need to run this as root, try $(bold sudo tunnel $@)"
-			exit 1
-		fi
-
+		root_check $@
 		snapctl restart tunnel.tinc
 		;;
 	name)
