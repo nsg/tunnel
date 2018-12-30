@@ -166,7 +166,7 @@ case "$1" in
 		;;
 	add)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_add
-
+		set -x
 		echo "Paste the output of \"tunnel export\" from the other node."
 		echo "After the paste, press control-d to save this new node."
 		cat > $SNAP_DATA/tmp/import-data
@@ -179,6 +179,7 @@ case "$1" in
 		fi
 		snapctl set connect=$c
 		rm $SNAP_DATA/tmp/import-data
+		set +x
 		;;
 	del)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
