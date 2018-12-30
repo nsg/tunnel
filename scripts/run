@@ -189,7 +189,7 @@ case "$1" in
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_list
 
 		for host in $(ls -1 $SNAP_DATA/tinc/hosts/); do
-			snap_tinc info $host
+			snap_tinc info $host | sed "s/$(tinc_name)/$(bold $(tinc_name))/"
 			echo
 		done
 		;;
