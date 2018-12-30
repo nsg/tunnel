@@ -185,6 +185,8 @@ case "$1" in
 
 		if [ "x$old_c" != x ]; then
 			c="$old_c:$new_c"
+		else
+			c="$new_c"
 		fi
 
 		snap_snapctl connect "$c"
