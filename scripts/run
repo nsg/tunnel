@@ -196,13 +196,15 @@ case "$1" in
 		done
 		;;
 	status)
-		echo "# BRIDGE"
-		brctl show $TUNNEL
+		echo "$(bold BRIDGE_______________________________)"
+		brctl show $BRIDGE
 		echo
-		echo "# CONNECTIONS"
+		echo "$(bold CONNECTIONS__________________________)"
 		snap_tinc dump connections
-		echo "# NODES"
+		echo
+		echo "$(bold NODES________________________________)"
 		snap_tinc dump nodes
+		echo
 		;;
 	export)
 		root_check $@
