@@ -90,7 +90,8 @@ about() {
 		"Tinc (https://www.tinc-vpn.org)." \
 		"Tinc has several advanced features that tunnel is not intended to support." \
 		"If you need them I recommend that you install and use Tinc directly. Tinc" \
-		"is available in most software repositories.\n\n" \
+		"is available in most software repositories.\n" | fold -s
+	echo -e \
 		"There are no dedicated server or client. Any tunnel installation can" \
 		"connect to any other installation, assuming it's reachable. For this" \
 		"installation to be reachable you need to make sure that port" \
