@@ -50,6 +50,7 @@ usage() {
 	echo "  $(bold del) $(dim "[name]")      Remove another system."
 	echo "  $(bold list)            List added hosts."
 	echo "  $(bold restart)         Restart tincd service."
+	echo "  $(bold status)          Show various status information."
 	echo
 	echo " Advanced:"
 	echo "  $(bold tinc) $(dim "[cmd]")      Exec raw tinc commands."
@@ -192,6 +193,15 @@ case "$1" in
 			snap_tinc info $host | sed "s/$(tinc_name)/$(bold $(tinc_name))/"
 			echo
 		done
+		;;
+	status)
+		echo "# BRIDGE"
+		brctl show $TUNNEL
+		echo
+		echo "# CONNECTIONS"
+		snap_tinc dump connections
+		echo "# NODES"
+		snap_tinc dump nodes
 		;;
 	export)
 		root_check $@
