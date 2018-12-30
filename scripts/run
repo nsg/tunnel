@@ -6,6 +6,10 @@ tinc_name() {
 	hostname | sed 's/[^a-z0-9]//'
 }
 
+snap_tinc() {
+	tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
+}
+
 bold() { echo -ne "\e[1m${@}\e[0m"; }
 dim() { echo -ne "\e[2m${@}\e[0m"; }
 inverted() { echo -ne "\e[7m${@}\e[0m"; }
@@ -158,7 +162,7 @@ case "$1" in
 			echo "You need to run this as root, try $(bold sudo tunnel $@)"
 			exit 1
 		fi
-		tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $@
+		snap_tinc $@
 		;;
 	add)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_add
@@ -190,7 +194,7 @@ case "$1" in
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_list
 
 		for host in $(ls -1 $SNAP_DATA/tinc/hosts/); do
-			tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid info $host
+			snap_tinc info $host
 			echo
 		done
 		;;
@@ -203,7 +207,7 @@ case "$1" in
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_export
 
 		if [ -z $2 ]; then
-			tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid export
+			snap_tinc export
 		elif [ -f "$SNAP_DATA/tinc/hosts/$2" ]; then
 			cat "$SNAP_DATA/tinc/hosts/$2"
 		else
@@ -221,7 +225,7 @@ case "$1" in
 			exit 0
 		fi
 
-		tinc -c $SNAP_DATA/tinc/ --pidfile=$SNAP_DATA/tinc/pid $1
+		snap_tinc $1
 		;;
 	restart)
 		if [ $UID != 0 ]; then
