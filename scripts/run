@@ -227,14 +227,17 @@ case "$1" in
 		done
 		;;
 	status)
-		echo "$(bold BRIDGE_______________________________)"
+		echo "$(bold BRIDGE_____________________________________________________________)"
 		brctl show $BRIDGE
 		echo
-		echo "$(bold CONNECTIONS__________________________)"
+		echo "$(bold CONNECTIONS________________________________________________________)"
 		snap_tinc dump connections
 		echo
-		echo "$(bold NODES________________________________)"
+		echo "$(bold NODES______________________________________________________________)"
 		snap_tinc dump nodes
+		echo
+		echo "$(bold GRAPH______________________________________________________________)"
+		snap_tinc dump graph | graph-easy --from graphviz --as ascii 2>/dev/null
 		echo
 		;;
 	export)

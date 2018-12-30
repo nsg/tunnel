@@ -55,6 +55,7 @@ parts:
       - texinfo
     stage-packages:
       - bridge-utils
+      - libgraph-easy-perl
 
   run:
     plugin: dump
