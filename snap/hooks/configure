@@ -11,9 +11,13 @@ tinc_name() {
 	hostname | sed 's/[^a-z0-9]//'
 }
 
+file_header() {
+	echo "# This file was written by the configure hook by snapd at $(date +%F_%T)."
+	echo "# The file will be overwritten, see: tunnel config"
+}
+
 echo "\
-# This file is written by the configure hook by snapd.
-# The file will be overwritten, see: tunnel config
+$(file_header)
 
 BRIDGE=$(get_value bridge tunnel0)
 MODE=$(get_value mode switch)
@@ -24,8 +28,7 @@ CONNECTTO=$(get_value connect)
 . $SNAP_DATA/tunnel/tunnel.conf
 
 echo "\
-# This file is written by the configure hook by snapd.
-# The file will be overwritten, see: tunnel config
+$(file_header)
 
 Name = $(tinc_name)
 Mode = $MODE
@@ -39,8 +42,7 @@ done
 
 echo "\
 #!/bin/bash
-# This file is written by the configure hook by snapd.
-# The file will be overwritten, see: tunnel config
+$(file_header)
 
 brctl addif $BRIDGE \$INTERFACE
 ip link set dev \$INTERFACE up" \
@@ -49,8 +51,7 @@ chmod +x $SNAP_DATA/tinc/tinc-up
 
 echo "\
 #!/bin/bash
-# This file is written by the configure hook by snapd.
-# The file will be overwritten, see: tunnel config
+$(file_header)
 
 ip link set dev \$INTERFACE down
 brctl delif $BRIDGE \$INTERFACE" \
