@@ -73,9 +73,3 @@ All done, if you need to change the port on the server, run
 ### Connect two hosts with add
 
 Run `tunnel add` on the client and follow the instructions.
-
-```
-server> tunnel export
-client> tunnel add
-(paste, and control-d)
-```
