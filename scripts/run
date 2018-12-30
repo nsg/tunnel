@@ -17,6 +17,13 @@ root_check() {
 	fi
 }
 
+snap_snapctl() {
+	# The configure hook is not triggered if I use snapctl from inside the snap.
+	# From the outside a "snap set tunnel connect=foo" would run the hook.
+	snapctl set $1="$2"
+	$SNAP/meta/hooks/configure
+}
+
 bold() { echo -ne "\e[1m${@}\e[0m"; }
 dim() { echo -ne "\e[2m${@}\e[0m"; }
 inverted() { echo -ne "\e[7m${@}\e[0m"; }
@@ -166,9 +173,8 @@ case "$1" in
 		;;
 	add)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_add
-		set -x
-		echo "Paste the output of \"tunnel export\" from the other node."
-		echo "After the paste, press control-d to save this new node."
+		echo "Paste the output of \"tunnel tinc export\" from the other node." \
+			"After the paste, press control-d to save this new node." | fold -s
 		cat > $SNAP_DATA/tmp/import-data
 		cat $SNAP_DATA/tmp/import-data | $0 tinc import
 		c="$(snapctl get connect)"
@@ -177,9 +183,8 @@ case "$1" in
 		else
 			c="$c:$(awk '/Name/{ print $NF }' $SNAP_DATA/tmp/import-data)"
 		fi
-		snapctl set connect=$c
+		snap_snapctl connect "$c"
 		rm $SNAP_DATA/tmp/import-data
-		set +x
 		;;
 	del)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
