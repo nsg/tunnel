@@ -72,4 +72,4 @@ All done, if you need to change the port on the server, run
 
 ### Connect two hosts with add
 
-Run `tunnel add` on the client and follow the instructions.
+Run `tunnel add` on both the client and server. Follow the instructions.
