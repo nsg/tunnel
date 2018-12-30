@@ -85,15 +85,18 @@ config() {
 }
 
 about() {
-	echo "Tunnel is based on a collection of several softwares, but the main"
-	echo "component is the software Tinc (https://www.tinc-vpn.org). Tinc"
-	echo "has several advanced features that tunnel does not support. If you"
-	echo "need them I recommend that you install and use Tinc."
-	echo
-	echo "There are no dedicated server or client. Any tunnel installation can"
-	echo "connect to any other installation, assuming it's reachable. For a"
-	echo "installation to be reachable you need to make sure that port $(bold $TINC_PORT) TCP/UDP"
-	echo "is reachable. See $(bold tunnel config) for how to change these values."
+	echo -e \
+		"The main component of tunnel is the software" \
+		"Tinc (https://www.tinc-vpn.org)." \
+		"Tinc has several advanced features that tunnel is not intended to support." \
+		"If you need them I recommend that you install and use Tinc directly. Tinc" \
+		"is available in most software repositories.\n\n" \
+		"There are no dedicated server or client. Any tunnel installation can" \
+		"connect to any other installation, assuming it's reachable. For this" \
+		"installation to be reachable you need to make sure that port" \
+		"$(bold $TINC_PORT) TCP/UDP" \
+		"is reachable by the other installations. See $(bold tunnel config) for how" \
+		"to change these values." | fold -s
 }
 
 help_add() {
