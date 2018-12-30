@@ -191,10 +191,7 @@ case "$1" in
 		echo "Connect is updated to $(bold $c), see $(bold tunnel config)." | fold -s
 	
 		echo "Please give me the IP or DNS name to $(bold $new_c)"
-		c_ip=
-		while ! $c_ip; do
-			echo -n "[?] > "; read c_ip
-		done
+		echo -n "[?] > "; read c_ip
 
 		echo "What port? 655 is default."
 		echo -n "[655] > "; read c_port
@@ -204,14 +201,14 @@ case "$1" in
 
 		echo "What is to be considered as the local subnet. For example" \
 			"192.168.0.0/24 or 192.168.0.20/31 and so on?" | fold -s
-		c_subnet=
-		while ! $c_subnet; do
-			echo -n "[?] > "; read c_subnet
-		done
+		echo -n "[?] > "; read c_subnet
 
 		echo "Address = $c_ip" >> $SNAP_DATA/tinc/hosts/$new_c
 		echo "Port = $c_port" >> $SNAP_DATA/tinc/hosts/$new_c
 		echo "Subnet = $c_subnet" >> $SNAP_DATA/tinc/hosts/$new_c
+
+		echo "If you like to edit the configuration later, edit" \
+			"$SNAP_DATA/tinc/hosts/$new_c" | fold -s
 		;;
 	del)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
