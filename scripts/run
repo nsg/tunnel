@@ -2,6 +2,8 @@
 
 . $SNAP_DATA/tunnel/tunnel.conf
 
+export PERL5LIB=$SNAP/usr/share/perl5/:$SNAP/usr/lib/x86_64-linux-gnu/perl/5.22:$SNAP/usr/share/perl/5.22
+
 tinc_name() {
 	hostname | sed 's/[^a-z0-9]//'
 }
