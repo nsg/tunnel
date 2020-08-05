@@ -174,38 +174,57 @@ case "$1" in
 		cat > $SNAP_DATA/tmp/import-data
 		cat $SNAP_DATA/tmp/import-data | $0 tinc import
 		new_c="$(awk '/Name/{ print $NF }' $SNAP_DATA/tmp/import-data)"
-		old_c="$(snapctl get connect)"
 		rm $SNAP_DATA/tmp/import-data
 
-		if [ "x$old_c" != x ]; then
-			c="$old_c:$new_c"
-		else
-			c="$new_c"
-		fi
+		echo "Is the remote system reachable from this system? Do you like to " \
+			"configure Address and Port?" | fold -s
 
-		snap_snapctl connect "$c"
-		echo "Connect is updated to $(bold $c), see $(bold tunnel config)." | fold -s
-	
-		echo "Please give me the IP or DNS name to $(bold $new_c)"
-		echo -n "[?] > "; read c_ip
+		CONFIGURE_IPPORT=
+		while [ 1 ]; do
+			echo -n "[Y/n] > "; read _question
+			if [ x$_question == xY ] || [ x$_question == xy ]; then
+				CONFIGURE_IPPORT=yes
+				break;
+			elif [ x$_question == xN ] || [ x$_question == xn ]; then
+				break;
+			fi
+		done
 
-		echo "What port? 655 is default."
-		echo -n "[655] > "; read c_port
-		if [ -z $c_port ]; then
-			c_port=655
+		if [ x$CONFIGURE_IPPORT == xyes ]; then
+			old_c="$(snapctl get connect)"
+			if [ "x$old_c" != x ]; then
+				c="$old_c:$new_c"
+			else
+				c="$new_c"
+			fi
+
+			snap_snapctl connect "$c"
+			echo "Connect is updated to $(bold $c), see $(bold tunnel config)." | fold -s
+		
+			echo "Please give me the IP or DNS name to $(bold $new_c)"
+			echo -n "[?] > "; read c_ip
+
+			echo "What port? 655 is default."
+			echo -n "[655] > "; read c_port
+			if [ -z $c_port ]; then
+				c_port=655
+			fi
+
+			echo "Address = $c_ip" >> $SNAP_DATA/tinc/hosts/$new_c
+			echo "Port = $c_port" >> $SNAP_DATA/tinc/hosts/$new_c
 		fi
 
 		echo "What is to be considered as the local subnet. For example" \
 			"192.168.0.0/24 or 192.168.0.20/31 and so on?" | fold -s
 		echo -n "[?] > "; read c_subnet
 
-		echo "Address = $c_ip" >> $SNAP_DATA/tinc/hosts/$new_c
-		echo "Port = $c_port" >> $SNAP_DATA/tinc/hosts/$new_c
 		echo "Subnet = $c_subnet" >> $SNAP_DATA/tinc/hosts/$new_c
 
 		echo "If you like to edit the configuration later, edit" \
 			"$SNAP_DATA/tinc/hosts/$new_c" | fold -s
 		;;
+
+		snapctl restart tunnel.tinc
 	del)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
 		root_check $@
