@@ -222,9 +222,9 @@ case "$1" in
 
 		echo "If you like to edit the configuration later, edit" \
 			"$SNAP_DATA/tinc/hosts/$new_c" | fold -s
-		;;
 
 		snapctl restart tunnel.tinc
+		;;
 	del)
 		[ "x$SHOW_HELP_SECTION" == xyes ] && help_del
 		root_check $@
