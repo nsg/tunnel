@@ -2,4 +2,8 @@
 
 . $SNAP_DATA/tunnel/tunnel.conf
 
+while [ ! -e $SNAP_DATA/tunnel/tinc-is-configured ]; do
+    sleep 1
+done
+
 exec tincd -c $SNAP_DATA/tinc --pidfile=$SNAP_DATA/tinc/pid --no-detach

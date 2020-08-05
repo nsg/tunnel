@@ -6,7 +6,8 @@ load_config() {
 }
 
 config_checksum() {
-	sha256sum $SNAP_DATA/tunnel/tunnel.conf | awk '{ print $1 }'
+	echo -n $(sha256sum $SNAP_DATA/tunnel/tunnel.conf | awk '{ print $1 }')
+	echo -n $SNAP_REVISION
 }
 
 tinc_name() {
@@ -36,6 +37,7 @@ reconfigure() {
 		fi
 	fi
 
+	touch $SNAP_DATA/tunnel/tinc-is-configured
 }
 
 while [ -f $SNAP_DATA/tunnel/interfaces_needed ]; do
@@ -43,15 +45,22 @@ while [ -f $SNAP_DATA/tunnel/interfaces_needed ]; do
 		rm $SNAP_DATA/tunnel/interfaces_needed
 		brctl delbr testbrin99
 	fi
-	sleep 1
+	sleep 10
 done
 
-while sleep 1; do
+while sleep 10; do
 	if [ -f $SNAP_DATA/tunnel/tunnel.conf ]; then
 		if [[ $CONFIG_CHECKSUM != $(config_checksum) ]]; then
+			echo "Config checksum changed from $CONFIG_CHECKSUM to $(config_checksum), reload config."
 			load_config
 			reconfigure
 			CONFIG_CHECKSUM=$(config_checksum)
 		fi
+	fi
+
+	if [ ! -e $SNAP_DATA/tinc/pid ]; then
+		echo "Unable to detect tinc pidfile, restart tincd service in 5 seconds"
+		sleep 5
+		snapctl restart tunnel.tinc
 	fi
 done

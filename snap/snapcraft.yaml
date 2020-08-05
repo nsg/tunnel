@@ -8,7 +8,8 @@ description: |
   tunnel between computers. This snap is to make the process really easy
   to use.
 
-grade: devel
+base: core18
+grade: stable
 confinement: strict
 
 apps:

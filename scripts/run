@@ -221,6 +221,7 @@ case "$1" in
 		done
 		;;
 	status)
+		root_check $@
 		echo "$(bold BRIDGE_____________________________________________________________)"
 		brctl show $BRIDGE
 		echo
