@@ -1,5 +1,7 @@
 # Tunnel
 
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/tunnel)
+
 [![Snap Status](https://build.snapcraft.io/badge/nsg/tunnel.svg)](https://build.snapcraft.io/user/nsg/tunnel)
 
 This project contains the sources of the snap `tunnel`, it's used to bridge
