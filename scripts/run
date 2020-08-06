@@ -221,7 +221,7 @@ case "$1" in
 		fi
 
 		echo "What is to be considered as the local subnet. For example" \
-			"192.168.0.0/24 or 192.168.0.20/31 and so on?" | fold -s
+			"192.168.0.0/24 or 192.168.0.20/32 and so on?" | fold -s
 		echo -n "[?] > "; read c_subnet
 
 		echo "Subnet = $c_subnet" >> $SNAP_DATA/tinc/hosts/$new_c
