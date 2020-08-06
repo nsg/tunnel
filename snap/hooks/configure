@@ -45,7 +45,7 @@ echo "\
 $(file_header)
 
 brctl addif $BRIDGE \$INTERFACE
-ip link set dev $BRIDGE up" \
+ip link set $INTERFACE up \
 > $SNAP_DATA/tinc/tinc-up
 chmod +x $SNAP_DATA/tinc/tinc-up
 
@@ -57,7 +57,7 @@ echo "\
 #!/bin/bash
 $(file_header)
 
-ip link set dev $BRIDGE down
+ip link set $INTERFACE up
 brctl delif $BRIDGE \$INTERFACE" \
 > $SNAP_DATA/tinc/tinc-down
 chmod +x $SNAP_DATA/tinc/tinc-down
