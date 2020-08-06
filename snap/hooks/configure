@@ -45,8 +45,8 @@ echo "\
 $(file_header)
 
 brctl addif $BRIDGE \$INTERFACE
-ip link set \$INTERFACE up \
-> $SNAP_DATA/tinc/tinc-up
+ip link set \$INTERFACE up
+" > $SNAP_DATA/tinc/tinc-up
 chmod +x $SNAP_DATA/tinc/tinc-up
 
 if [ ! -z $SUBNET ]; then
@@ -58,8 +58,8 @@ echo "\
 $(file_header)
 
 ip link set \$INTERFACE up
-brctl delif $BRIDGE \$INTERFACE" \
-> $SNAP_DATA/tinc/tinc-down
+brctl delif $BRIDGE \$INTERFACE
+" > $SNAP_DATA/tinc/tinc-down
 chmod +x $SNAP_DATA/tinc/tinc-down
 
 if [ ! -z $SUBNET ]; then
