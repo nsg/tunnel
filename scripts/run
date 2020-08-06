@@ -78,6 +78,12 @@ config() {
 	echo "  $(dim sudo snap set tunnel) $(bold "bridge=$BRIDGE")"
 	echo "  Tunnel will create non-existent bridges."
 	echo
+	echo "Set IP and choose the tinc subnet:"
+	echo "  $(dim sudo snap set tunnel) $(bold "subnet=$SUBNET")"
+	echo "  Configure this hosts IP and the tinc subnet."
+	echo "  Example: 10.0.0.100/24"
+	echo "  This will set the IP to 10.0.0.100, with a netmask of 24 (255.255.255.0)"
+	echo
 	echo "Select package routing mode:"
 	echo "  $(dim sudo snap set tunnel) $(bold "mode=$MODE")"
 	echo "  The options are: router, switch and hub."

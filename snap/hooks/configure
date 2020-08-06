@@ -22,6 +22,7 @@ $(file_header)
 BRIDGE=$(get_value bridge tunnel0)
 MODE=$(get_value mode switch)
 TINC_PORT=$(get_value port 655)
+SUBNET=$(get_value subnet)
 CONNECTTO=$(get_value connect)
 " > "$SNAP_DATA/tunnel/tunnel.conf"
 
@@ -48,6 +49,10 @@ ip link set dev \$INTERFACE up" \
 > $SNAP_DATA/tinc/tinc-up
 chmod +x $SNAP_DATA/tinc/tinc-up
 
+if [ ! -z $TINC_SUBNET ]; then
+	echo "ip address add dev $INTERFACE $SUBNET" >> $SNAP_DATA/tinc/tinc-up
+fi
+
 echo "\
 #!/bin/bash
 $(file_header)
@@ -56,5 +61,9 @@ ip link set dev \$INTERFACE down
 brctl delif $BRIDGE \$INTERFACE" \
 > $SNAP_DATA/tinc/tinc-down
 chmod +x $SNAP_DATA/tinc/tinc-down
+
+if [ ! -z $TINC_SUBNET ]; then
+	echo "ip address del dev $INTERFACE $SUBNET" >> $SNAP_DATA/tinc/tinc-down
+fi
 
 snapctl restart tunnel.tinc
