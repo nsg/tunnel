@@ -49,7 +49,7 @@ ip link set dev \$INTERFACE up" \
 > $SNAP_DATA/tinc/tinc-up
 chmod +x $SNAP_DATA/tinc/tinc-up
 
-if [ ! -z $TINC_SUBNET ]; then
+if [ ! -z $SUBNET ]; then
 	echo "ip address add dev $INTERFACE $SUBNET" >> $SNAP_DATA/tinc/tinc-up
 fi
 
@@ -62,7 +62,7 @@ brctl delif $BRIDGE \$INTERFACE" \
 > $SNAP_DATA/tinc/tinc-down
 chmod +x $SNAP_DATA/tinc/tinc-down
 
-if [ ! -z $TINC_SUBNET ]; then
+if [ ! -z $SUBNET ]; then
 	echo "ip address del dev $INTERFACE $SUBNET" >> $SNAP_DATA/tinc/tinc-down
 fi
 
