@@ -23,11 +23,8 @@ short disconnects please do not use this snap.
 
 ## Install
 
-I use the build services at [build.snapcraft.io](https://build.snapcraft.io/user/nsg/tunnel)
-to build this snap. Master of this repository is published to the edge
-channel. Try it with `snap install --edge tunnel`.
-
 The get the latest stable version, type `snap install tunnel`.
+Master of this repository is published to the edge channel. Try it with `snap install --edge tunnel`.
 
 ## Why tunnel and not just tinc?
 
@@ -41,35 +38,3 @@ this snap.
 
 If you need to customize the setup outside what this snap provides, I
 recommend that you take your time to install tinc yourself.
-
-## Usage
-
-Do a `snap install tunnel` on all your systems. At least one need to
-have a public exposed port. Run `tunnel` to get started.
-
-Let's assume that you have a server, with the hostname "server" and
-a laptop with the hostname "laptop".
-
-### Install and setup permissions
-
-Install it on both systems:
-
-```
-server> sudo snap install tunnel
-laptop> sudo snap install tunnel
-```
-
-You now need to setup the permissions, the easiest way is just to
-run this (feel free to run `tunnel.setup` and inspect the commands):
-
-```
-server> tunnel.setup | sudo bash
-laptop> tunnel.setup | sudo bash
-```
-
-All done, if you need to change the port on the server, run
-`tunnel config`.
-
-### Connect two hosts with add
-
-Run `tunnel add` on both the client and server. Follow the instructions.
