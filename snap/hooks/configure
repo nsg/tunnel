@@ -45,25 +45,25 @@ echo "\
 $(file_header)
 
 brctl addif $BRIDGE \$INTERFACE
-ip link set dev \$INTERFACE up" \
+ip link set dev $BRIDGE up" \
 > $SNAP_DATA/tinc/tinc-up
 chmod +x $SNAP_DATA/tinc/tinc-up
 
 if [ ! -z $SUBNET ]; then
-	echo "ip address add dev $INTERFACE $SUBNET" >> $SNAP_DATA/tinc/tinc-up
+	echo "ip address add dev $BRIDGE $SUBNET" >> $SNAP_DATA/tinc/tinc-up
 fi
 
 echo "\
 #!/bin/bash
 $(file_header)
 
-ip link set dev \$INTERFACE down
+ip link set dev $BRIDGE down
 brctl delif $BRIDGE \$INTERFACE" \
 > $SNAP_DATA/tinc/tinc-down
 chmod +x $SNAP_DATA/tinc/tinc-down
 
 if [ ! -z $SUBNET ]; then
-	echo "ip address del dev $INTERFACE $SUBNET" >> $SNAP_DATA/tinc/tinc-down
+	echo "ip address del dev $BRIDGE $SUBNET" >> $SNAP_DATA/tinc/tinc-down
 fi
 
 snapctl restart tunnel.tinc
