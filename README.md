@@ -2,6 +2,8 @@
 
 [![tunnel](https://snapcraft.io/tunnel/badge.svg)](https://snapcraft.io/tunnel)
 
+![](docs/tunnel-demo.png)
+
 This project contains the sources of the snap `tunnel`, it's used to bridge
 network segments together over the Internet.
 
