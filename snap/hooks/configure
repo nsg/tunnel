@@ -51,6 +51,7 @@ chmod +x $SNAP_DATA/tinc/tinc-up
 
 if [ ! -z $SUBNET ]; then
 	echo "ip address add dev $BRIDGE $SUBNET" >> $SNAP_DATA/tinc/tinc-up
+	echo "ip link set dev $BRIDGE up" >> $SNAP_DATA/tinc/tinc-up
 fi
 
 echo "\
@@ -64,6 +65,7 @@ chmod +x $SNAP_DATA/tinc/tinc-down
 
 if [ ! -z $SUBNET ]; then
 	echo "ip address del dev $BRIDGE $SUBNET" >> $SNAP_DATA/tinc/tinc-down
+	echo "ip link set dev $BRIDGE down" >> $SNAP_DATA/tinc/tinc-down
 fi
 
 snapctl restart tunnel.tinc
