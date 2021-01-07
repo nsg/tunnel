@@ -1,8 +1,6 @@
 # Tunnel
 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/tunnel)
-
-[![Snap Status](https://build.snapcraft.io/badge/nsg/tunnel.svg)](https://build.snapcraft.io/user/nsg/tunnel)
+[![tunnel](https://snapcraft.io/tunnel/badge.svg)](https://snapcraft.io/tunnel)
 
 This project contains the sources of the snap `tunnel`, it's used to bridge
 network segments together over the Internet.
@@ -24,6 +22,8 @@ change any settings. This is expected behavior, if you can't handle rare
 short disconnects please do not use this snap.
 
 ## Install
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/tunnel)
 
 The get the latest stable version, type `snap install tunnel`.
 Master of this repository is published to the edge channel. Try it with `snap install --edge tunnel`.
